@@ -8,212 +8,340 @@
 
 import FlaggerGoWrapper
 
-struct Response<T: Decodable>: Decodable {
-    let data: T
-    let error: String?
+public enum LogLevel:String {
+    case debug, warning, error;
+}
+
+private func convertToDictionary(text: String) -> [String: Any]? {
+    if let data = text.data(using: .utf8) {
+        do {
+            return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    return nil
+}
+
+fileprivate func parseResponse<T>(response: String) -> T? {
+    if let parsedDict = convertToDictionary(text: response){
+        if let data = parsedDict["data"] {
+            return data as? T
+        }
+    }
+    return nil
 }
 
 public class Flagger {
-    public static func initialize(apiKey: String) -> Void {
-        FlaggerGoWrapperInit("{\"apiKey\":\""+apiKey+"\",\"sourceURL\":\"http://localhost:3000/config/v3/\",\"sseURL\":\"http://localhost:3000/sse/v3?envKey=x2ftC7QtG7arQW9l\",\"ingestionURL\":\"http://localhost:3000/collector\",\"logLevel\":\"DEBUG\",\"sdkName\":\"ios\",\"sdkVersion\":\"3.0.0\"}")
+    public static func initialize(apiKey: String, sourceURL: String, backupSourceURL: String, sseURL: String, ingestionURL: String, logLevel: LogLevel = LogLevel.error) -> Void {
+        
+        var version = "3.0.0"
+        if let path = Bundle.main.path(forResource: "Info", ofType: "plist"), let dict = NSDictionary(contentsOfFile: path) as? [String: String] {
+            if let v = dict["version"]{
+                version = v
+            }
+        }
+        
+        FlaggerGoWrapperInit("{\"apiKey\":\"\(apiKey)\",\"sourceURL\":\"\(sourceURL)\",\"backupSourceURL\":\"\(backupSourceURL)\", \"sseURL\":\"\(sseURL)\",\"ingestionURL\":\"\(ingestionURL)\",\"logLevel\":\"\(logLevel)\",\"sdkName\":\"ios\",\"sdkVersion\":\"\(version)\"}"
+        )
+        // todo: change sdkVersion from hardcode to a defined via plist
     }
     
-    public static func publish(_ entity: IdEntity) -> Bool {
+    public static func initialize(apiKey: String, logLevel: LogLevel = LogLevel.error) -> Void {
+        var isInit = false
+        
+        // load flaggerConfig from plist
+        if let path = Bundle.main.path(forResource: "Info", ofType: "plist"), let dict = NSDictionary(contentsOfFile: path) as? [String: String] {
+            if let sourceURL = dict["sourceURL"],let backupSourceURL = dict["backupSourceURL"], let sseURL = dict["sseURL"], let ingestionURL = dict["ingestionURL"] {
+                initialize(apiKey: apiKey, sourceURL: sourceURL, backupSourceURL: backupSourceURL, sseURL: sseURL + apiKey, ingestionURL: ingestionURL, logLevel: logLevel)
+                isInit = true
+            }
+        }
+        
+        // load flagger with default values
+        if !isInit {
+            initialize(apiKey: apiKey, sourceURL: "https://api.airshiphq.com/configurations/",
+                       backupSourceURL:"https://backup-api.airshiphq.com/configurations/",
+                       sseURL:"https://sse.airshiphq.com/",
+                       ingestionURL: "https://ingestion.airshiphq.com/collector?envKey=",
+                       logLevel: logLevel
+            )
+        }
+    }
+    
+    public static func publish(_ entity: Entity) -> Void {
         let buf: String = "{\"entity\": \(entity.description)}"
-        let res = FlaggerGoWrapperPublish(buf)
-        guard let data = res.data(using: .utf8) else {return false}
-        let reponse: Response<Bool> = try! JSONDecoder().decode(Response<Bool>.self, from: data)
-        return reponse.data
+        let _ = FlaggerGoWrapperPublish(buf)
     }
     
-    public static func track(_ event: Event) -> Bool {
+    public static func track(_ event: Event) -> Void {
         let buf: String = "{\"event\": \(event.description)}"
-        let res = FlaggerGoWrapperTrack(buf)
-        guard let data = res.data(using: .utf8) else {return false}
-        let reponse: Response<Bool> = try! JSONDecoder().decode(Response<Bool>.self, from: data)
-        return reponse.data
+        let _ = FlaggerGoWrapperTrack(buf)
     }
     
     public static func shutdown(timeoutMillis: Int) -> Bool {
         let buf: String = "{\"timeout\": \(timeoutMillis)}"
         let res = FlaggerGoWrapperShutdown(buf)
-        guard let data = res.data(using: .utf8) else {return false}
-        let reponse: Response<Bool> = try! JSONDecoder().decode(Response<Bool>.self, from: data)
-        return reponse.data
+        
+        if let isShutdown: Bool = parseResponse(response: res){
+            return isShutdown
+        }
+        return false
     }
     
-    public static func setEntity(_ entity: IdEntity?) -> Bool {
+    public static func setEntity(_ entity: Entity?) -> Void {
         let buf: String = "{\"entity\": \(entity != nil ? entity!.description : "null")}"
-        let res = FlaggerGoWrapperSetEntity(buf)
-        guard let data = res.data(using: .utf8) else {return false}
-        let reponse: Response<Bool> = try! JSONDecoder().decode(Response<Bool>.self, from: data)
-        return reponse.data
+        let _ = FlaggerGoWrapperSetEntity(buf)
     }
     
-    public static func flagIsEnabled(_ codename: String, _ entity: IdEntity) -> Bool {
+    public static func flagIsEnabled(codename: String, entity: Entity) -> Bool {
         let buf: String = "{\"codename\": \"\(codename)\", \"entity\": \(entity.description)}"
         let res = FlaggerGoWrapperFlagIsEnabled(buf)
-        guard let data = res.data(using: .utf8) else {return false}
-        let reponse: Response<Bool> = try! JSONDecoder().decode(Response<Bool>.self, from: data)
-        return reponse.data
+        if let isEnabled: Bool = parseResponse(response: res){
+            return isEnabled
+        }
+        return false
     }
     
-    public static func flagIsEnabled(_ codename: String) -> Bool {
+    public static func flagIsEnabled(codename: String) -> Bool {
         let buf = "{\"codename\": \"\(codename)\"}"
         let res = FlaggerGoWrapperFlagIsEnabled(buf)
-        guard let data = res.data(using: .utf8) else {return false}
-        let reponse: Response<Bool> = try! JSONDecoder().decode(Response<Bool>.self, from: data)
-        return reponse.data
+        if let isEnabled: Bool = parseResponse(response: res){
+            return isEnabled
+        }
+        return false
     }
     
-    public static func flagIsSampled(_ codename: String, _ entity: IdEntity) -> Bool {
+    public static func flagIsSampled(codename: String, entity: Entity) -> Bool {
         let buf = "{\"codename\": \"\(codename)\", \"entity\": \(entity.description)}"
         let res = FlaggerGoWrapperFlagIsSampled(buf)
-        guard let data = res.data(using: .utf8) else {return false}
-        let reponse: Response<Bool> = try! JSONDecoder().decode(Response<Bool>.self, from: data)
-        return reponse.data
+        if let isSampled: Bool = parseResponse(response: res){
+            return isSampled
+        }
+        return false
     }
     
-    public static func flagIsSampled(_ codename: String) -> Bool {
+    public static func flagIsSampled(codename: String) -> Bool {
         let buf = "{\"codename\": \"\(codename)\"}"
         let res = FlaggerGoWrapperFlagIsSampled(buf)
-        guard let data = res.data(using: .utf8) else {return false}
-        let reponse: Response<Bool> = try! JSONDecoder().decode(Response<Bool>.self, from: data)
-        return reponse.data
+        if let isSampled: Bool = parseResponse(response: res){
+            return isSampled
+        }
+        return false
     }
     
-    public static func flagGetVariation(_ codename: String, _ entity: IdEntity) -> String {
+    public static func flagGetVariation(codename: String, entity: Entity) -> String {
         let buf = "{\"codename\": \"\(codename)\", \"entity\": \(entity.description)}"
         let res = FlaggerGoWrapperFlagGetVariation(buf)
-        guard let data = res.data(using: .utf8) else {return ""}
-        let reponse: Response<String> = try! JSONDecoder().decode(Response<String>.self, from: data)
-        return reponse.data
+        if let variation: String = parseResponse(response: res){
+            return variation
+        }
+        return "off"
     }
     
-    public static func flagGetVariation(_ codename: String) -> String {
+    public static func flagGetVariation(codename: String) -> String {
         let buf = "{\"codename\": \"\(codename)\"}"
         let res = FlaggerGoWrapperFlagGetVariation(buf)
-        guard let data = res.data(using: .utf8) else {return ""}
-        let reponse: Response<String> = try! JSONDecoder().decode(Response<String>.self, from: data)
-        return reponse.data
+        if let variation: String = parseResponse(response: res){
+            return variation
+        }
+        return "off"
     }
     
-    public static func flagGetPayload(_ codename: String, _ entity: IdEntity) -> [String:Any] {
+    public static func flagGetPayload(codename: String, entity: Entity) -> [String:Any] {
         let buf = "{\"codename\": \"\(codename)\", \"entity\": \(entity.description)}"
         let res = FlaggerGoWrapperFlagGetPayload(buf)
-        guard let data = res.data(using: .utf8) else {return [:]}
-        let reponse:[String:Any] = try! JSONSerialization.jsonObject(with: data, options: []) as! [String:Any]
-        return reponse["data"] as! [String:Any]
+        if let payload: [String: Any] = parseResponse(response: res){
+            return payload
+        }
+        return [:]
     }
     
-    public static func flagGetPayload(_ codename: String) -> [String:Any] {
+    public static func flagGetPayload(codename: String) -> [String:Any] {
         let buf = "{\"codename\": \"\(codename)\"}"
         let res = FlaggerGoWrapperFlagGetPayload(buf)
-        guard let data = res.data(using: .utf8) else {return [:]}
-        let reponse:[String:Any] = try! JSONSerialization.jsonObject(with: data, options: []) as! [String:Any]
-        return reponse["data"] as! [String:Any]
+        if let payload: [String: Any] = parseResponse(response: res){
+            return payload
+        }
+        return [:]
     }
 }
 
 public class Event {
     let name: String
-    let attributes: [String: Any] // Value must be Bool/String/Numeric
-    let entity: IdEntity?
+    let attributes: Attributes
+    let entity: Entity?
     
-    init(name: String, attributes: [String: Any]) {
+    init(name: String, attributes: Attributes) {
         self.name = name
         self.attributes = attributes
         self.entity = nil
     }
     
-    init(name: String, attributes: [String: Any], entity: IdEntity) {
+    init(name: String, attributes: Attributes, entity: Entity) {
         self.name = name
         self.attributes = attributes
         self.entity = entity
     }
     
     public var description: String {
-        let jsonDict = [
-            "name": self.name as Any,
-            "attributes": self.attributes as Any,
-            "entity": self.entity as Any
-            ] as [String: Any]
+        var jsonDict: [String: Any] = [
+            "name": self.name
+        ]
+        jsonDict["attributes"] = self.attributes.asDict()
         
+        if let entity = self.entity {
+            jsonDict["entity"] = entity.asDict()
+        }
         
         if JSONSerialization.isValidJSONObject(jsonDict) {
             if let data = try? JSONSerialization.data(withJSONObject: jsonDict, options: []) {
                 return String(data: data, encoding: .utf8)!
             }
         }
-        return ""
+        return "{}"
     }
 }
 
-public class IdEntity: Encodable {
+public class Entity {
     let id: String
+    let type: String?
+    let name: String?
+    let group: Group?
+    let attributes: Attributes?
+    
+    init(_ id: String){
+        self.id = id
+        self.type = nil
+        self.name = nil
+        self.group = nil
+        self.attributes = nil
+    }
+    
+    convenience init(id: String){
+        self.init(id)
+    }
+    
+    init(id:String, type: String? = nil, name: String? = nil, group: Group? = nil, attributes: Attributes? = nil){
+        self.id = id
+        self.type = type
+        self.name = name
+        self.group = group
+        self.attributes = attributes
+    }
+    
+    fileprivate func asDict() -> [String: Any]{
+        var jsonDict:[String: Any] = [
+            "id": self.id
+        ]
+        
+        if let type = self.type  {
+            jsonDict["type"] = type
+        }
+        
+        if let name = self.name  {
+            jsonDict["name"] = name
+        }
+        
+        if let group = self.group  {
+            jsonDict["group"] = group.asDict()
+        }
+        
+        if let attributes = self.attributes {
+            jsonDict["attributes"] = attributes.asDict()
+        }
+        return jsonDict
+    }
+    
+    public var description: String {
+        
+        let dict = asDict()
+        if JSONSerialization.isValidJSONObject(dict) {
+            if let data = try? JSONSerialization.data(withJSONObject: dict, options: []) {
+                return String(data: data, encoding: .utf8)!
+            }
+        }
+        return "{}"
+    }
+}
+
+public class Attributes {
+    private var dict: [String: Any] = [:]
+    
+    private init(dict: [String: Any]){
+        self.dict = dict
+    }
+    
+    /*
+     returns Attributes if all type of every value in dict is either Bool, String or Number
+     return nil otherwise
+     */
+    public static func parse(dict: [String: Any]) -> Attributes? {
+        for (_,value) in dict {
+            switch value {
+            case is Bool:
+                continue
+            case is String:
+                continue
+            case is Int:
+                continue
+            case is Float:
+                continue
+            case is Double:
+                continue
+            default:
+                return nil
+            }
+        }
+        
+        return Attributes(dict: dict)
+    }
+    
+    public func asDict() -> [String: Any] {
+        return dict
+    }
+}
+
+public class Group {
+    var id: String
+    var type: String?
+    var attributes: Attributes? // Value must be Bool/String/Numeric
     
     init(_ id: String){
         self.id = id
     }
     
-    init(id: String){
-        self.id = id
-    }
-    
-    public var description: String { return "{\"id\": \"\(id)\"}" }
-}
-
-public class GroupEntity: IdEntity {
-    var type: String?
-    var name: String?
-    var attributes: [String: Any]? // Value must be Bool/String/Numeric
-    
-    override init(id: String){
-        super.init(id: id)
-    }
-    
-    init?(id: String, type: String?, name: String?, attributes:[String: Any]?){
-        super.init(id)
+    convenience init?(id: String, type: String? = nil, attributes:Attributes? = nil){
+        self.init(id)
         self.type = type
-        self.name = name
-        if attributes != nil {
-            for attribute in attributes! {
-                switch attribute.value {
-                case is Bool:
-                    continue
-                case is String:
-                    continue
-                case is Int:
-                    continue
-                case is Float:
-                    continue
-                case is Double:
-                    continue
-                default:
-                    return nil
-                }
-            }
-        }
         self.attributes = attributes
-        
     }
     
     
-    public override var description: String {
-        let jsonDict = [
-            "id": self.id,
-            "name": self.name as Any,
-            "type": self.type as Any,
-            "attributes": self.attributes as Any
-            ] as [String: Any]
+    fileprivate func asDict() -> [String: Any]{
+        var jsonDict:[String: Any] = [
+            "id": self.id
+        ]
         
+        if let type = self.type  {
+            jsonDict["type"] = type
+        }
         
-        if JSONSerialization.isValidJSONObject(jsonDict) {
-            if let data = try? JSONSerialization.data(withJSONObject: jsonDict, options: []) {
+        if let attributes = self.attributes {
+            jsonDict["attributes"] =  attributes.asDict()
+        }
+        
+        return jsonDict
+    }
+    
+    public var description: String {
+        let dict = asDict()
+        if JSONSerialization.isValidJSONObject(dict) {
+            if let data = try? JSONSerialization.data(withJSONObject: dict, options: []) {
                 return String(data: data, encoding: .utf8)!
             }
         }
-        return ""
+        return "{}"
     }
     
 }

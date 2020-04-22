@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>backupSourceURL</key>
+	<string>http://localhost:3000/config/v3/</string>
+	<key>ingestionURL</key>
+	<string>http://localhost:3000/collector</string>
+	<key>sseURL</key>
+	<string>http://localhost:3000/sse/v3?envKey=</string>
+	<key>sourceURL</key>
+	<string>http://localhost:3000/config/v3/</string>
+</dict>
+</plist>
