@@ -75,16 +75,27 @@ class FlaggerTests: XCTestCase {
     }
     
     func testFlagIsSampled() {
-        XCTAssertFalse(Flagger.flagIsSampled(codename: "random-codename"))
+        if let attributes = Attributes.parse(dict: ["createdAt":"2014-09-20T00:00:00Z"]) {
+            XCTAssertTrue(Flagger.flagIsSampled(codename: "company-profiles", entity: Entity(id: "9139fdsds5", attributes: attributes)))
+        }
     }
     
     func testFlagGetVariation() {
-        XCTAssertEqual(Flagger.flagGetVariation(codename: "fdskkdsf"), "off")
+        XCTAssertEqual(Flagger.flagGetVariation(codename: "group-messaging", entity: Entity("57145770")), "enabled")
     }
     
     func testFlagGetPayload() throws {
         let payload =  Flagger.flagGetPayload(codename: "faq-redesign", entity: Entity(id: "92784783"))
-        XCTAssert(payload["show-buttons"] as! Bool)
+        if let showButtonsPayload = payload["show-buttons"]{
+          
+            if let showButtons = showButtonsPayload as? Bool{
+                XCTAssert(showButtons)
+            } else {
+                XCTFail("Must be Bool")
+            }
+        } else {
+            XCTFail("Must return payload")
+        }
     }
     
     func testAttributeParsing() throws {
