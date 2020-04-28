@@ -60,10 +60,10 @@ public class Flagger {
         
         // load flagger with default values
         if !isInit {
-            initialize(apiKey: apiKey, sourceURL: "https://api.airshiphq.com/configurations/",
-                       backupSourceURL:"https://backup-api.airshiphq.com/configurations/",
-                       sseURL:"https://sse.airshiphq.com/",
-                       ingestionURL: "https://ingestion.airshiphq.com/collector?envKey=",
+            initialize(apiKey: apiKey, sourceURL: "https://api.airdeploy.io/configurations/",
+                       backupSourceURL:"https://backup-api.airdeploy.io/configurations/",
+                       sseURL:"https://sse.airdeploy.io/sse/v3/?envKey=",
+                       ingestionURL: "https://ingestion.airdeploy.io/collector?envKey=",
                        logLevel: logLevel
             )
         }

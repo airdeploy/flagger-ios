@@ -19,6 +19,12 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>sourceURL</key>
-	<string>http://localhost:3000/config/v3/</string>
+	<string>https://api.airdeploy.io/configurations/</string>
+	<key>backupSourceURL</key>
+	<string>https://backup-api.airdeploy.io/configurations/</string>
+	<key>sseURL</key>
+	<string>https://sse.airdeploy.io/sse/v3/?envKey=</string>
+	<key>ingestionURL</key>
+	<string>https://ingestion.airdeploy.io/collector?envKey=</string>
 </dict>
 </plist>
