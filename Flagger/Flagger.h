@@ -1,11 +1,3 @@
-//
-//  Flagger.h
-//  Flagger
-//
-//  Created by Herman Havrysh on 16/April/20.
-//  Copyright © 2020 Herman Havrysh. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
 
 //! Project version number for Flagger.

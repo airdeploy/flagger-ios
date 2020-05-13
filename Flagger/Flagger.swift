@@ -1,11 +1,3 @@
-//
-//  File.swift
-//  Flagger
-//
-//  Created by Herman Havrysh on 16/April/20.
-//  Copyright © 2020 Herman Havrysh. All rights reserved.
-//
-
 import FlaggerGoWrapper
 
 public enum LogLevel:String {
@@ -33,7 +25,7 @@ fileprivate func parseResponse<T>(response: String) -> T? {
 }
 
 public class Flagger {
-    public static func initialize(apiKey: String, sourceURL: String, backupSourceURL: String, sseURL: String, ingestionURL: String, logLevel: LogLevel = LogLevel.error) -> Void {
+    public static func initialize(apiKey: String, sourceURL: String = "", backupSourceURL: String = "", sseURL: String = "", ingestionURL: String = "", logLevel: LogLevel = LogLevel.error) -> Void {
         
         var version = "3.0.0"
         if let path = Bundle.main.path(forResource: "Info", ofType: "plist"), let dict = NSDictionary(contentsOfFile: path) as? [String: String] {
@@ -42,31 +34,7 @@ public class Flagger {
             }
         }
         
-        FlaggerGoWrapperInit("{\"apiKey\":\"\(apiKey)\",\"sourceURL\":\"\(sourceURL)\",\"backupSourceURL\":\"\(backupSourceURL)\", \"sseURL\":\"\(sseURL)\",\"ingestionURL\":\"\(ingestionURL)\",\"logLevel\":\"\(logLevel)\",\"sdkName\":\"ios\",\"sdkVersion\":\"\(version)\"}"
-        )
-        // todo: change sdkVersion from hardcode to a defined via plist
-    }
-    
-    public static func initialize(apiKey: String, logLevel: LogLevel = LogLevel.error) -> Void {
-        var isInit = false
-        
-        // load flaggerConfig from plist
-        if let path = Bundle.main.path(forResource: "Info", ofType: "plist"), let dict = NSDictionary(contentsOfFile: path) as? [String: String] {
-            if let sourceURL = dict["sourceURL"],let backupSourceURL = dict["backupSourceURL"], let sseURL = dict["sseURL"], let ingestionURL = dict["ingestionURL"] {
-                initialize(apiKey: apiKey, sourceURL: sourceURL, backupSourceURL: backupSourceURL, sseURL: sseURL + apiKey, ingestionURL: ingestionURL, logLevel: logLevel)
-                isInit = true
-            }
-        }
-        
-        // load flagger with default values
-        if !isInit {
-            initialize(apiKey: apiKey, sourceURL: "https://api.airdeploy.io/configurations/",
-                       backupSourceURL:"https://backup-api.airdeploy.io/configurations/",
-                       sseURL:"https://sse.airdeploy.io/sse/v3/?envKey=",
-                       ingestionURL: "https://ingestion.airdeploy.io/collector?envKey=",
-                       logLevel: logLevel
-            )
-        }
+        FlaggerGoWrapperInit("{\"apiKey\":\"\(apiKey)\",\"sourceURL\":\"\(sourceURL)\",\"backupSourceURL\":\"\(backupSourceURL)\", \"sseURL\":\"\(sseURL)\",\"ingestionURL\":\"\(ingestionURL)\",\"logLevel\":\"\(logLevel)\",\"sdkName\":\"ios\",\"sdkVersion\":\"\(version)\"}")
     }
     
     public static func publish(_ entity: Entity) -> Void {
@@ -268,8 +236,35 @@ public class Entity {
 public class Attributes {
     private var dict: [String: Any] = [:]
     
+    public init(){}
+    
     private init(dict: [String: Any]){
         self.dict = dict
+    }
+    
+    public func put(key: String, value: Bool) -> Attributes {
+        dict[key] = value
+        return self
+    }
+    
+    public func put(key:String, value: String) -> Attributes {
+        dict[key] = value
+        return self
+    }
+    
+    public func put(key: String, value: Int) -> Attributes {
+        dict[key] = value
+        return self
+    }
+    
+    public func put(key: String, value: Float) -> Attributes {
+        dict[key] = value
+        return self
+    }
+    
+    public func put(key: String, value: Double) -> Attributes {
+        dict[key] = value
+        return self
     }
     
     /*

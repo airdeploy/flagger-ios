@@ -1,19 +1,11 @@
-//
-//  FlaggerTests.swift
-//  FlaggerTests
-//
-//  Created by Herman Havrysh on 16/April/20.
-//  Copyright © 2020 Herman Havrysh. All rights reserved.
-//
-
 import XCTest
 @testable import Flagger
 
 class FlaggerTests: XCTestCase {
     
     private var attributes: Attributes?
-    
-    override func setUpWithError() throws {
+
+    override func setUp() {
         let testBundle = Bundle(for: FlaggerTests.self)
         if let url = testBundle.url(forResource: "Urls", withExtension: "plist"),
             let dict = NSDictionary(contentsOf: url) as? [String:Any] {
@@ -21,15 +13,14 @@ class FlaggerTests: XCTestCase {
         } else {
             XCTFail("Didn't find Urls.plist")
         }
-        
+
         if let attributes = Attributes.parse(dict: ["isAdmin": true, "age":21, "name":"Leo"]) {
             self.attributes = attributes
         } else {
             XCTFail("all attributes must be parsed")
         }
-        
     }
-    
+
     override func tearDownWithError() throws {
         XCTAssertFalse(Flagger.shutdown(timeoutMillis: 1000))
     }
@@ -48,13 +39,10 @@ class FlaggerTests: XCTestCase {
     }
     
     func testTrack(){
-        if let attributes = Attributes.parse(dict: ["isAdmin": true]){
-            let entity = Entity(id: "57145770", type: "User", group: Group(id: "321", attributes:attributes))
-            let event = Event(name: "test", attributes: attributes, entity: entity)
-            Flagger.track(event)
-        } else {
-            XCTFail("all attributes must be parsed")
-        }
+        let entity = Entity(id: "57145770", type: "User", group: Group(id: "321", attributes:Attributes().put(key: "isAdmin", value: true)))
+        let event = Event(name: "test", attributes: Attributes().put(key: "isAdmin", value: true), entity: entity)
+        Flagger.track(event)
+        
     }
     
     func testSetEntity() {
@@ -68,20 +56,24 @@ class FlaggerTests: XCTestCase {
     }
     
     func testFlagIsEnabled() throws {
+        Flagger.setEntity(nil)
         XCTAssert(Flagger.flagIsEnabled(codename: "group-messaging", entity: Entity(id: "57145770")))
-        XCTAssert(Flagger.flagIsEnabled(codename: "group-messaging", entity: Entity(id: "57145770")))
-        XCTAssertFalse(Flagger.flagIsEnabled(codename: "group-messaging", entity: Entity(id: "57145771")))
         XCTAssertFalse(Flagger.flagIsEnabled(codename: "group-messaging"))
+        
+        // group example
+        XCTAssert(Flagger.flagIsEnabled(codename: "group-messaging", entity: Entity(id: "randomid", group: Group(id: "4576815", type: "Company"))))
     }
     
     func testFlagIsSampled() {
-        if let attributes = Attributes.parse(dict: ["createdAt":"2014-09-20T00:00:00Z"]) {
-            XCTAssertTrue(Flagger.flagIsSampled(codename: "company-profiles", entity: Entity(id: "9139fdsds5", attributes: attributes)))
-        }
+        let attributes: Attributes = Attributes().put(key:"createdAt", value:"2014-09-20T00:00:00Z")
+        XCTAssertTrue(Flagger.flagIsSampled(codename: "company-profiles", entity: Entity(id: "9139fdsds5", attributes: attributes)))
+
+        // group example
+        XCTAssertTrue(Flagger.flagIsSampled(codename: "org-chart", entity: Entity(id: "41", type: "User", group: Group(id:"543", type:"Company"))))
     }
     
     func testFlagGetVariation() {
-        XCTAssertEqual(Flagger.flagGetVariation(codename: "group-messaging", entity: Entity("57145770")), "enabled")
+        XCTAssertEqual(Flagger.flagGetVariation(codename: "group-messaging", entity: Entity(id: "57145770", type: "User")), "enabled")
     }
     
     func testFlagGetPayload() throws {
