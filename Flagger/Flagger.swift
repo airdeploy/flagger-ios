@@ -9,6 +9,7 @@ private func convertToDictionary(text: String) -> [String: Any]? {
         do {
             return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
         } catch {
+            // should never happens by convention
             print(error.localizedDescription)
         }
     }
@@ -140,13 +141,13 @@ public class Event {
     let attributes: Attributes
     let entity: Entity?
     
-    init(name: String, attributes: Attributes) {
+    public init(name: String, attributes: Attributes) {
         self.name = name
         self.attributes = attributes
         self.entity = nil
     }
     
-    init(name: String, attributes: Attributes, entity: Entity) {
+    public init(name: String, attributes: Attributes, entity: Entity) {
         self.name = name
         self.attributes = attributes
         self.entity = entity
@@ -178,7 +179,7 @@ public class Entity {
     let group: Group?
     let attributes: Attributes?
     
-    init(_ id: String){
+    public init(_ id: String){
         self.id = id
         self.type = nil
         self.name = nil
@@ -186,11 +187,11 @@ public class Entity {
         self.attributes = nil
     }
     
-    convenience init(id: String){
+    public convenience init(id: String){
         self.init(id)
     }
     
-    init(id:String, type: String? = nil, name: String? = nil, group: Group? = nil, attributes: Attributes? = nil){
+    public init(id:String, type: String? = nil, name: String? = nil, group: Group? = nil, attributes: Attributes? = nil){
         self.id = id
         self.type = type
         self.name = name
@@ -302,11 +303,11 @@ public class Group {
     var type: String?
     var attributes: Attributes? // Value must be Bool/String/Numeric
     
-    init(_ id: String){
+    public init(_ id: String){
         self.id = id
     }
     
-    convenience init?(id: String, type: String? = nil, attributes:Attributes? = nil){
+    public convenience init?(id: String, type: String? = nil, attributes:Attributes? = nil){
         self.init(id)
         self.type = type
         self.attributes = attributes
