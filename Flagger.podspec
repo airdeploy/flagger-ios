@@ -9,15 +9,12 @@ Pod::Spec.new do |s|
                         A Swift framework for Flagger.
                        DESC
   
-    s.homepage         = "https://github.com/airdeploy/flagger-sdks"
+    s.homepage         = "https://airdeploy.io"
     s.license          = 'MIT'
     s.author           = { "Engineering" => "engineering@airdeploy.io" }
     s.source           = { :git => "https://github.com/airdeploy/flagger-sdks.git", :tag => s.version.to_s}
 
     s.ios.deployment_target = '10.0'
-    #s.tvos.deployment_target = '9.0'
-    #s.watchos.deployment_target = '3.0'
-    #s.osx.deployment_target = '10.9'
     s.requires_arc = true
   
     s.source_files = 'Flagger/*.{swift,h}'
