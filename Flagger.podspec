@@ -12,14 +12,14 @@ Pod::Spec.new do |s|
     s.homepage         = "https://airdeploy.io"
     s.license          = 'MIT'
     s.author           = { "Engineering" => "engineering@airdeploy.io" }
-    s.source           = { :git => "https://github.com/airdeploy/flagger-sdks.git", :tag => s.version.to_s}
+    s.source           = { :git => "https://github.com/airdeploy/flagger-ios.git", :tag => s.version.to_s}
 
     s.ios.deployment_target = '10.0'
     s.requires_arc = true
   
     s.source_files = 'Flagger/*.{swift,h}'
     s.static_framework = true
-    s.vendored_frameworks = 'FlaggerGoWrapper.framework'
+    s.vendored_frameworks = "FlaggerGoWrapper.framework"
     
   end
   
