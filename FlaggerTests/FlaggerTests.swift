@@ -39,7 +39,7 @@ class FlaggerTests: XCTestCase {
     }
     
     func testTrack(){
-        let entity = Entity(id: "57145770", type: "User", group: Group(id: "321", attributes:Attributes().put(key: "isAdmin", value: true)))
+        let entity = Entity(id: "57145770", type: "User", name:"John", group: Group(id: "321", attributes:Attributes().put(key: "isAdmin", value: true), name: "Cool Company"))
         let event = Event(name: "test", attributes: Attributes().put(key: "isAdmin", value: true), entity: entity)
         Flagger.track(event)
         

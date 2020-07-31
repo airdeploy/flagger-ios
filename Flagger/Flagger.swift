@@ -301,16 +301,18 @@ public class Attributes {
 public class Group {
     var id: String
     var type: String?
+    var name: String?
     var attributes: Attributes? // Value must be Bool/String/Numeric
     
     public init(_ id: String){
         self.id = id
     }
     
-    public convenience init?(id: String, type: String? = nil, attributes:Attributes? = nil){
+    public convenience init?(id: String, type: String? = nil, attributes:Attributes? = nil, name: String? = nil){
         self.init(id)
         self.type = type
         self.attributes = attributes
+        self.name = name
     }
     
     
@@ -325,6 +327,10 @@ public class Group {
         
         if let attributes = self.attributes {
             jsonDict["attributes"] =  attributes.asDict()
+        }
+
+        if let name = self.name {
+            jsonDict["name"] = name
         }
         
         return jsonDict
