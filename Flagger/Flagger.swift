@@ -63,7 +63,7 @@ public class Flagger {
         let _ = FlaggerGoWrapperSetEntity(buf)
     }
     
-    public static func flagIsEnabled(codename: String, entity: Entity) -> Bool {
+    public static func isEnabled(codename: String, entity: Entity) -> Bool {
         let buf: String = "{\"codename\": \"\(codename)\", \"entity\": \(entity.description)}"
         let res = FlaggerGoWrapperFlagIsEnabled(buf)
         if let isEnabled: Bool = parseResponse(response: res){
@@ -72,7 +72,7 @@ public class Flagger {
         return false
     }
     
-    public static func flagIsEnabled(codename: String) -> Bool {
+    public static func isEnabled(codename: String) -> Bool {
         let buf = "{\"codename\": \"\(codename)\"}"
         let res = FlaggerGoWrapperFlagIsEnabled(buf)
         if let isEnabled: Bool = parseResponse(response: res){
@@ -81,7 +81,7 @@ public class Flagger {
         return false
     }
     
-    public static func flagIsSampled(codename: String, entity: Entity) -> Bool {
+    public static func isSampled(codename: String, entity: Entity) -> Bool {
         let buf = "{\"codename\": \"\(codename)\", \"entity\": \(entity.description)}"
         let res = FlaggerGoWrapperFlagIsSampled(buf)
         if let isSampled: Bool = parseResponse(response: res){
@@ -90,7 +90,7 @@ public class Flagger {
         return false
     }
     
-    public static func flagIsSampled(codename: String) -> Bool {
+    public static func isSampled(codename: String) -> Bool {
         let buf = "{\"codename\": \"\(codename)\"}"
         let res = FlaggerGoWrapperFlagIsSampled(buf)
         if let isSampled: Bool = parseResponse(response: res){
@@ -99,7 +99,7 @@ public class Flagger {
         return false
     }
     
-    public static func flagGetVariation(codename: String, entity: Entity) -> String {
+    public static func getVariation(codename: String, entity: Entity) -> String {
         let buf = "{\"codename\": \"\(codename)\", \"entity\": \(entity.description)}"
         let res = FlaggerGoWrapperFlagGetVariation(buf)
         if let variation: String = parseResponse(response: res){
@@ -108,7 +108,7 @@ public class Flagger {
         return "off"
     }
     
-    public static func flagGetVariation(codename: String) -> String {
+    public static func getVariation(codename: String) -> String {
         let buf = "{\"codename\": \"\(codename)\"}"
         let res = FlaggerGoWrapperFlagGetVariation(buf)
         if let variation: String = parseResponse(response: res){
@@ -117,7 +117,7 @@ public class Flagger {
         return "off"
     }
     
-    public static func flagGetPayload(codename: String, entity: Entity) -> [String:Any] {
+    public static func getPayload(codename: String, entity: Entity) -> [String:Any] {
         let buf = "{\"codename\": \"\(codename)\", \"entity\": \(entity.description)}"
         let res = FlaggerGoWrapperFlagGetPayload(buf)
         if let payload: [String: Any] = parseResponse(response: res){
@@ -126,7 +126,7 @@ public class Flagger {
         return [:]
     }
     
-    public static func flagGetPayload(codename: String) -> [String:Any] {
+    public static func getPayload(codename: String) -> [String:Any] {
         let buf = "{\"codename\": \"\(codename)\"}"
         let res = FlaggerGoWrapperFlagGetPayload(buf)
         if let payload: [String: Any] = parseResponse(response: res){
@@ -328,7 +328,7 @@ public class Group {
         if let attributes = self.attributes {
             jsonDict["attributes"] =  attributes.asDict()
         }
-
+        
         if let name = self.name {
             jsonDict["name"] = name
         }

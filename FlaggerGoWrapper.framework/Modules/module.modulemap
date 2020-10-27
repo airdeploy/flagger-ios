@@ -1,0 +1,8 @@
+framework module "FlaggerGoWrapper" {
+	header "ref.h"
+    header "FlaggerGoWrapper.objc.h"
+    header "Universe.objc.h"
+    header "FlaggerGoWrapper.h"
+
+    export *
+}
