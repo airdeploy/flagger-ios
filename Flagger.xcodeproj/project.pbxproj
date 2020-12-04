@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		79E472F52576BBA300EBDE0B /* FlaggerGoWrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79E472F42576BBA300EBDE0B /* FlaggerGoWrapper.framework */; };
 		DF1EDE6D24508B1A008F3B62 /* Urls.plist in Resources */ = {isa = PBXBuildFile; fileRef = DF1EDE6C24508B1A008F3B62 /* Urls.plist */; };
 		DFA90AB524487C2200E77C4E /* Flagger.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFA90AB424487C2200E77C4E /* Flagger.swift */; };
-		DFA90AB924487F6100E77C4E /* FlaggerGoWrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFA90AB824487F6100E77C4E /* FlaggerGoWrapper.framework */; };
 		DFDEA9732448704000EC5CF6 /* Flagger.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFDEA9692448703F00EC5CF6 /* Flagger.framework */; };
 		DFDEA9782448704000EC5CF6 /* FlaggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDEA9772448704000EC5CF6 /* FlaggerTests.swift */; };
 		DFDEA97A2448704000EC5CF6 /* Flagger.h in Headers */ = {isa = PBXBuildFile; fileRef = DFDEA96C2448703F00EC5CF6 /* Flagger.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -26,9 +26,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		79E472F42576BBA300EBDE0B /* FlaggerGoWrapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FlaggerGoWrapper.framework; sourceTree = "<group>"; };
 		DF1EDE6C24508B1A008F3B62 /* Urls.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Urls.plist; sourceTree = "<group>"; };
 		DFA90AB424487C2200E77C4E /* Flagger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flagger.swift; sourceTree = "<group>"; };
-		DFA90AB824487F6100E77C4E /* FlaggerGoWrapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FlaggerGoWrapper.framework; sourceTree = "<group>"; };
 		DFDEA9692448703F00EC5CF6 /* Flagger.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Flagger.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFDEA96C2448703F00EC5CF6 /* Flagger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Flagger.h; sourceTree = "<group>"; };
 		DFDEA96D2448703F00EC5CF6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = Flagger/Info.plist; sourceTree = SOURCE_ROOT; };
@@ -42,7 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DFA90AB924487F6100E77C4E /* FlaggerGoWrapper.framework in Frameworks */,
+				79E472F52576BBA300EBDE0B /* FlaggerGoWrapper.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -57,13 +57,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		79E472E02576B98800EBDE0B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		DFDEA95F2448703F00EC5CF6 = {
 			isa = PBXGroup;
 			children = (
-				DFA90AB824487F6100E77C4E /* FlaggerGoWrapper.framework */,
+				79E472F42576BBA300EBDE0B /* FlaggerGoWrapper.framework */,
 				DFDEA96B2448703F00EC5CF6 /* Flagger */,
 				DFDEA9762448704000EC5CF6 /* FlaggerTests */,
 				DFDEA96A2448703F00EC5CF6 /* Products */,
+				79E472E02576B98800EBDE0B /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -281,13 +289,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -338,12 +347,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -363,6 +374,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)GoWrapper",
 				);
 				INFOPLIST_FILE = Flagger/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -375,6 +387,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.airdeploy.Flagger;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -394,6 +407,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)GoWrapper",
 				);
 				INFOPLIST_FILE = Flagger/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -406,6 +420,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.airdeploy.Flagger;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name             = "Flagger"
-    s.version          = "3.0.0"
+    s.version          = "3.0.1"
     s.summary          = "An open source Swift SDK for feature flagging (feature gating, feature toggles)"
     s.swift_version    = "5.1"
     s.swift_versions   = ["4.2", "5.0", "5.1"]
@@ -21,6 +21,9 @@ Pod::Spec.new do |s|
     s.source_files = 'Flagger/*.{swift,h}'
     s.static_framework = true
     s.vendored_frameworks = "FlaggerGoWrapper.framework"
-    
+
+    s.pod_target_xcconfig = { 'ONLY_ACTIVE_ARCH' => 'YES' }
+    s.user_target_xcconfig = { 'ONLY_ACTIVE_ARCH' => 'YES' }
+
   end
   
