@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name             = "Flagger"
-    s.version          = "3.0.1"
+    s.version          = "3.0.2"
     s.summary          = "An open source Swift SDK for feature flagging (feature gating, feature toggles)"
     s.swift_version    = "5.1"
     s.swift_versions   = ["4.2", "5.0", "5.1"]
